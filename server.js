@@ -2,7 +2,7 @@ const express = require("express");
 const { PORT } = require("./config");
 const dbConnect = require("./database");
 const router = require("./routes");
-const errorHandler = require("./middleware/erroHandler");
+const errorHandler = require("./middleware/errorHandler");
 
 const app = express();
 

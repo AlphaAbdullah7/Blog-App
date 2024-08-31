@@ -28,7 +28,7 @@ const authController = {
 		try {
 			if (emailInUse) {
 				const error = {
-					status: 409,
+					status: 401,
 					message: "Email Already in use",
 				};
 				return next(error);
@@ -36,7 +36,7 @@ const authController = {
 
 			if (usernameInUse) {
 				const error = {
-					status: 409,
+					status: 401,
 					message: "Username Already in use",
 				};
 				return next(error);
