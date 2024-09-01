@@ -1,6 +1,7 @@
 const Joi = require("joi");
 const User = require("../models/user");
 const bcrypt = require("bcryptjs");
+const userDto = require("../dto/user");
 
 // const passwordPattern = /^(?=.*[A-Za-z])(?=.*d)[A-Za-zd]{8,}$/;
 
@@ -57,7 +58,9 @@ const authController = {
 
 		const user = await userToRegister.save();
 
-		return res.status(201).json({ user });
+		const userRegister = new userDto(user);
+
+		return res.status(201).json({ userRegister });
 	},
 
 	async login(req, res, next) {
@@ -99,8 +102,12 @@ const authController = {
 			return next(error);
 		}
 
-		return res.status(200).json({ user });
+		const userLogin = new userDto(user);
+
+		return res.status(200).json({ userLogin });
 	},
+
+	async logout(req, res, next) {},
 };
 
 module.exports = authController;
