@@ -3,8 +3,11 @@ const { PORT } = require("./config");
 const dbConnect = require("./database");
 const router = require("./routes");
 const errorHandler = require("./middleware/errorHandler");
+const cookieParser = require("cookie-parser");
 
 const app = express();
+
+app.use(cookieParser());
 
 app.use(express.json());
 
