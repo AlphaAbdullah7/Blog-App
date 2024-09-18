@@ -7,7 +7,7 @@ class JWTService {
 		return jwt.sign(payload, ACCESS_TOKEN_SECRET, { expiresIn: expiry });
 	}
 
-	static signrefreshToken(payload, expiry) {
+	static signRefreshToken(payload, expiry) {
 		return jwt.sign(payload, REFRESH_TOKEN_SECRET, { expiresIn: expiry });
 	}
 
@@ -15,11 +15,11 @@ class JWTService {
 		return jwt.verify(token, ACCESS_TOKEN_SECRET);
 	}
 
-	static verifyRefreshToken(token, userId) {
+	static verifyRefreshToken(token) {
 		return jwt.verify(token, REFRESH_TOKEN_SECRET);
 	}
 
-	static async storeRefreshToke(token) {
+	static async storeRefreshToken(token, userId) {
 		try {
 			const newToken = new RefreshToken({
 				token,
