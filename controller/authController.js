@@ -26,21 +26,21 @@ const authController = {
 		const { name, username, email, password } = req.body;
 
 		try {
-			const emailInUse = await User.exists({ email });
 			const usernameInUse = await User.exists({ username });
-
-			if (emailInUse) {
-				const error = {
-					status: 409,
-					message: "Email Already in use",
-				};
-				return next(error);
-			}
+			const emailInUse = await User.exists({ email });
 
 			if (usernameInUse) {
 				const error = {
 					status: 409,
 					message: "Username Already in use",
+				};
+				return next(error);
+			}
+
+			if (emailInUse) {
+				const error = {
+					status: 409,
+					message: "Email Already in use",
 				};
 				return next(error);
 			}
