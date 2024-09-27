@@ -3,7 +3,7 @@ const User = require("../models/user");
 const bcrypt = require("bcryptjs");
 const userDto = require("../dto/user");
 const JWTService = require("../services/JWTService");
-
+const RefreshToken = require("../models/token");
 // const passwordPattern = /^(?=.*[A-Za-z])(?=.*d)[A-Za-zd]{8,}$/;
 
 const authController = {
@@ -63,15 +63,9 @@ const authController = {
 			});
 
 			user = await userToRegister.save();
-			accessToken = JWTService.signAccessToken(
-				{ id: user.id, username: user.username },
-				"30m"
-			);
+			accessToken = JWTService.signAccessToken({ id: user.id }, "30m");
 
-			refreshToken = JWTService.signRefreshToken(
-				{ id: user.id, username: user.username },
-				"60m"
-			);
+			refreshToken = JWTService.signRefreshToken({ id: user.id }, "60m");
 		} catch (error) {
 			return next(error);
 		}
@@ -86,11 +80,11 @@ const authController = {
 			httpOnly: true,
 		});
 
-		JWTService.storeRefreshToken(refreshToken, user.id);
+		await JWTService.storeRefreshToken(refreshToken, user.id);
 
-		const userRegister = new userDto(user);
+		const registerUser = new userDto(user);
 
-		return res.status(201).json({ userRegister });
+		return res.status(201).json({ registerUser, auth: true });
 	},
 
 	async login(req, res, next) {
@@ -132,12 +126,50 @@ const authController = {
 			return next(error);
 		}
 
-		const userLogin = new userDto(user);
+		const accessToken = JWTService.signAccessToken({ id: user.id }, "30m");
+		const refreshToken = JWTService.signRefreshToken({ id: user.id }, "60m");
 
-		return res.status(200).json({ userLogin });
+		try {
+			await RefreshToken.updateOne(
+				{
+					userId: user.id,
+				},
+				{ token: refreshToken },
+				{ upsert: true }
+			);
+		} catch (error) {
+			return next(error);
+		}
+
+		res.cookie("accessToken", accessToken, {
+			maxAge: 24 * 60 * 60 * 1000,
+			httpOnly: true,
+		});
+
+		res.cookie("refresrToken", refreshToken, {
+			maxAge: 7 * 24 * 60 * 60 * 1000,
+			httpOnly: true,
+		});
+
+		const loginUser = new userDto(user);
+
+		return res.status(200).json({ loginUser, auth: true });
 	},
 
-	async logout(req, res, next) {},
+	async logout(req, res, next) {
+		const { refreshToken } = req.cookie;
+
+		try {
+			await RefreshToken.deleteOne({ token: refreshToken });
+		} catch (error) {
+			return next(error);
+		}
+
+		res.ClearCookie("accessToken");
+		res.ClearCookie("refreshToken");
+
+		return res.status(200).json({ user: null, auth: false });
+	},
 };
 
 module.exports = authController;
