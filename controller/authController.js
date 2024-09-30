@@ -4,6 +4,7 @@ const bcrypt = require("bcryptjs");
 const userDto = require("../dto/user");
 const JWTService = require("../services/JWTService");
 const RefreshToken = require("../models/token");
+const auth = require("../middleware/auth");
 // const passwordPattern = /^(?=.*[A-Za-z])(?=.*d)[A-Za-zd]{8,}$/;
 
 const authController = {
@@ -146,7 +147,7 @@ const authController = {
 			httpOnly: true,
 		});
 
-		res.cookie("refresrToken", refreshToken, {
+		res.cookie("refreshToken", refreshToken, {
 			maxAge: 7 * 24 * 60 * 60 * 1000,
 			httpOnly: true,
 		});
