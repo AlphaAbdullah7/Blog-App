@@ -158,7 +158,7 @@ const authController = {
 	},
 
 	async logout(req, res, next) {
-		const { refreshToken } = req.cookie;
+		const { refreshToken } = req.cookies;
 
 		try {
 			await RefreshToken.deleteOne({ token: refreshToken });
@@ -166,8 +166,8 @@ const authController = {
 			return next(error);
 		}
 
-		res.ClearCookie("accessToken");
-		res.ClearCookie("refreshToken");
+		res.clearCookie("accessToken");
+		res.clearCookie("refreshToken");
 
 		return res.status(200).json({ user: null, auth: false });
 	},
