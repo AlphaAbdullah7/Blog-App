@@ -171,6 +171,8 @@ const authController = {
 
 		return res.status(200).json({ user: null, auth: false });
 	},
+
+	async refresh(req, res, next) {},
 };
 
 module.exports = authController;
