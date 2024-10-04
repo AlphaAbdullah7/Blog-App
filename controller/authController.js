@@ -172,7 +172,9 @@ const authController = {
 		return res.status(200).json({ user: null, auth: false });
 	},
 
-	async refresh(req, res, next) {},
+	async refresh(req, res, next) {
+		const originalRefreshToken = req.cookies.refreshToken;
+	},
 };
 
 module.exports = authController;
