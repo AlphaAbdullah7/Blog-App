@@ -16,14 +16,15 @@ const auth = async (req, res, next) => {
 
 		let id;
 		try {
-			id = JWT.verifyAccessToken(accessToken)._id;
+			id = JWT.verifyAccessToken(accessToken).id;
+			console.log(`This is Id ${id}`);
 		} catch (error) {
 			next(error);
 		}
 
 		let user;
 		try {
-			user = await User.findOne({ id });
+			user = await User.findOne({ _id: id });
 		} catch (error) {
 			next(error);
 		}
